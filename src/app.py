@@ -88,6 +88,6 @@ if submit:
     # realiza a predição de income da pessoa com base nos dados inseridos pelo usuário
     results = model.predict(scaler_encoded_values)
 
-    result_to_show = ":red[Possuí Câncer]" if results[0] else ":green[Não Possuí Câncer]"
+    result_to_show = ":red[Possui Câncer]" if results[0] else ":green[Não Possui Câncer]"
 
     st.subheader("Seu Diagnóstico:  " + result_to_show)
