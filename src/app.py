@@ -3,6 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 
+def get_formated_genetic_risk(risk):
+    map = {
+        'Baixo': 0, 
+        'Médio': 1, 
+        'Alto': 2
+    }
+
+    return map[risk]
 
 # TODO: Mostrar os gráficos;
 # TODO: Solicitar que usuário adicione inputs;
@@ -53,5 +61,33 @@ with col7:
 with col8:
     cancer_history = st.checkbox('Possuí Histórico de Câncer?')
 
-
 submit = st.button('Predizer Diagnóstico')
+
+if submit:
+    # seta todos os attrs da pessoa e já realiza o mapeamento dos attrs
+    # se houver atributos não numéricos, agora é o momento de realizar o mapeamento
+    patient = {
+        'Age': age,
+        'Gender': int(gender == "Feminino"),
+        'BMI': bmi,
+        'Smoking': int(smoking),
+        'GeneticRisk': get_formated_genetic_risk(genetic_risk),
+        'PhysicalActivity': physical_activity,
+        'AlcoholIntake': alcohol_intake,
+        'CancerHistory': int(cancer_history)
+    }
+
+    df = pd.DataFrame([patient])
+
+    values = df.values
+
+    hot_encoded_values = one_hot_encoder.transform(values)
+
+    scaler_encoded_values = scaler_encoder.transform(hot_encoded_values)
+
+    # realiza a predição de income da pessoa com base nos dados inseridos pelo usuário
+    results = model.predict(scaler_encoded_values)
+
+    result_to_show = ":red[Possuí Câncer]" if results[0] else ":green[Não Possuí Câncer]"
+
+    st.subheader("Seu Diagnóstico:  " + result_to_show)
