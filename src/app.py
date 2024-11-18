@@ -5,6 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
+import util
+
+# Validação de login
+if not util.check_password():
+    # se a senha estiver errada, para o processamento do app
+    print("Usuario nao logado")
+    st.stop()
+
 
 # Método para obter o valor numérico de GeneticRisk
 def get_formated_genetic_risk(risk):
