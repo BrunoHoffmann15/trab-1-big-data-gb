@@ -184,7 +184,7 @@ with col7:
 
 # Configuração de input para obter se possí histórico de câncer.
 with col8:
-    cancer_history = st.checkbox('Possuí Histórico de Câncer?')
+    cancer_history = st.checkbox('Possui Histórico de Câncer?')
 
 submit = st.button('Predizer Diagnóstico')
 
