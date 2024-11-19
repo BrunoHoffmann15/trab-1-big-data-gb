@@ -183,8 +183,6 @@ if data_analyses_on:
     patients_data_for_tree_map = dataset_for_plots.drop(columns=['BMI', 'Age', 'AlcoholIntake', 'PhysicalActivity'])
 
     graph = px.treemap(patients_data_for_tree_map, path=['GeneticRisk', 'CancerHistory','Smoking' , 'Gender'], color="Diagnosis", color_continuous_scale=['#32a852', '#3261a8', '#a83259'])
-    st.write('Treemap também renderizado em nova aba.')
-    graph.show()
     st.plotly_chart(graph)
 
 
