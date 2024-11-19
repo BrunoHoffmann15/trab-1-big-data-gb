@@ -36,6 +36,7 @@ data_analyses_on = st.toggle('Exibir análise dos dados')
 if data_analyses_on:
     st.header('Dados de Pacientes com Câncer')
 
+    # Carrega o dataset e manipula dados quantitativos em qualitativos para melhor visualização dos gráficos
     dataset = pd.read_csv('./src/resources/The_Cancer_data_1500_V2.csv')
     dataset_for_plots = dataset.copy()
     dataset_for_plots['GeneticRisk'] = dataset_for_plots['GeneticRisk'].map({0: 'Baixo', 1: 'Médio', 2: 'Alto'})
@@ -43,6 +44,14 @@ if data_analyses_on:
     dataset_for_plots['Smoking'] =  dataset_for_plots['Smoking'].map({0: 'Não', 1: 'Sim'})
     dataset_for_plots['CancerHistory']  = dataset_for_plots['CancerHistory'].map({0: 'Sem histórico', 1: 'Com histórico'})
 
+    # Criação de gráficos
+    st.subheader('Análise dos Dados')
+    st.write('Para a construção dos gráficos foram utilizadas as libs matplotlib, seaborn e plotly em conjunto com o streamlit para renderização.')
+    st.subheader('Gráficos')
+    st.subheader('Porcentagens de distribuição de pacientes por gênero')
+    gender_distribution = np.unique(dataset_for_plots['Gender'], return_counts=True)
+    st.write(f"Porcentagem Masculino: {gender_distribution[1][1] / len(dataset_for_plots) * 100}%")
+    st.write(f"Porcentagem Feminino: {gender_distribution[1][0] / len(dataset_for_plots) * 100}%")
     plot = sns.countplot(x=dataset_for_plots['Gender'])
 
     plt.title('Distribuição por Gênero')
@@ -51,8 +60,14 @@ if data_analyses_on:
 
     st.pyplot(plot.get_figure())
 
+    # Limpa o plot para não interferir nos próximos
     plt.clf()
+    st.subheader('Porcentagens de distribuição de pacientes por gênero e diagnóstico')
+    count_cancer_female = np.sum((dataset_for_plots['Gender'] == 'Feminino') & (dataset_for_plots['Diagnosis']  == 1))
+    count_cancer_male = np.sum((dataset_for_plots['Gender'] == 'Masculino') & (dataset_for_plots['Diagnosis'] == 1))
 
+    st.write(f"Total de pessoas do gênero feminino com câncer: {count_cancer_female} ({count_cancer_female/gender_distribution[1][1] * 100}%)")
+    st.write(f"Total de pessoas do gênero masculino com câncer: {count_cancer_male} ({count_cancer_male/gender_distribution[1][0] * 100}%)")
     plot = sns.countplot(data=dataset_for_plots, x='Gender', hue='Diagnosis')
 
     plt.title('Relação entre Gênero e Câncer')
@@ -64,6 +79,11 @@ if data_analyses_on:
 
     plt.clf()
 
+    smoking_distribution = np.unique(dataset_for_plots['Smoking'], return_counts=True)
+    st.subheader('Porcentagens de distribuição de pacientes por fumantes')
+    st.write(f"Porcentagem de Fumantes: {smoking_distribution[1][1] / len(dataset_for_plots) * 100}%")
+    st.write(f"Porcentagem de Não fumantes: {smoking_distribution[1][0] / len(dataset_for_plots) * 100}%")
+
     plot = sns.countplot(x=dataset_for_plots['Smoking'])
 
     plt.title('Relação entre Fumantes e Câncer')
@@ -73,6 +93,12 @@ if data_analyses_on:
     st.pyplot(plot.get_figure())
 
     plt.clf()
+
+    patients_smoking_with_cancer = dataset_for_plots[(dataset_for_plots["Smoking"] == 'Sim') & (dataset_for_plots["Diagnosis"] == 1)];
+    patients_not_smoking_with_cancer = dataset_for_plots[(dataset_for_plots["Smoking"] == 'Não') & (dataset_for_plots["Diagnosis"] == 1)];
+    st.subheader('Porcentagens de distribuição de pacientes por fumantes e diagnóstico')
+    st.write(f"Percentual de Fumantes com Câncer: {len(patients_smoking_with_cancer) / smoking_distribution[1][1] * 100}%")
+    st.write(f"Percentual de Não Fumantes com Câncer: {len(patients_not_smoking_with_cancer) / smoking_distribution[1][0] * 100}%")
 
     plot = sns.countplot(data=dataset_for_plots, x='Smoking', hue='Diagnosis')
 
@@ -86,14 +112,15 @@ if data_analyses_on:
     plt.clf()
 
     genetic_risk_distribution = np.unique(dataset_for_plots['GeneticRisk'], return_counts=True)
-    divisor = len(dataset_for_plots) * 100
 
-    high_risk_perc = genetic_risk_distribution[1][0] / divisor
-    low_risk_perc = genetic_risk_distribution[1][1] / divisor
-    medium_risk_perc = genetic_risk_distribution[1][2] / divisor
+    high_risk_perc = genetic_risk_distribution[1][0] / len(dataset_for_plots) * 100
+    low_risk_perc = genetic_risk_distribution[1][1] / len(dataset_for_plots) * 100
+    medium_risk_perc = genetic_risk_distribution[1][2] / len(dataset_for_plots) * 100
 
     sizes = [low_risk_perc, medium_risk_perc, high_risk_perc]
     labels = ["Baixo Risco", "Médio Risco", "Alto Risco"]
+
+    st.header('Porcentagens de distribuição de pacientes por risco genético')
 
     fig = plt.figure(figsize=(8, 6))
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
@@ -104,6 +131,15 @@ if data_analyses_on:
     st.pyplot(fig)
 
     plt.clf()
+
+    patients_low_risk_with_cancer = dataset_for_plots[(dataset_for_plots["GeneticRisk"] == 'Baixo') & (dataset_for_plots["Diagnosis"] == 1)];
+    patients_medium_risk_with_cancer = dataset_for_plots[(dataset_for_plots["GeneticRisk"] == 'Médio') & (dataset_for_plots["Diagnosis"] == 1)];
+    patients_high_risk_with_cancer = dataset_for_plots[(dataset_for_plots["GeneticRisk"] == 'Alto') & (dataset_for_plots["Diagnosis"] == 1)];
+
+    st.header('Porcentagens de distribuição de pacientes por risco genético e diagnóstico')
+    st.write(f"Percentual de Baixo Risco com Câncer: {len(patients_high_risk_with_cancer) / genetic_risk_distribution[1][0] * 100}%")
+    st.write(f"Percentual de Médio Risco com Câncer: {len(patients_low_risk_with_cancer) / genetic_risk_distribution[1][1] * 100}%")
+    st.write(f"Percentual de Alto Risco com Câncer: {len(patients_medium_risk_with_cancer) / genetic_risk_distribution[1][2] * 100}%")
 
     plot = sns.countplot(data=dataset_for_plots, x='GeneticRisk', hue='Diagnosis')
 
@@ -116,6 +152,8 @@ if data_analyses_on:
 
     plt.clf()
 
+    st.header('Porcentagens de distribuição de pacientes por consumo de álcool e diagnóstico')
+
     plot = sns.violinplot(x='Diagnosis', y='AlcoholIntake', data=dataset_for_plots)
 
     plt.title('Relação entre Ingestão de Álcool e Câncer')
@@ -125,6 +163,8 @@ if data_analyses_on:
     st.pyplot(plot.get_figure())
 
     plt.clf()
+
+    st.header('Porcentagens de distribuição de pacientes por idade e diagnóstico')
 
     plot = sns.swarmplot(x='Age', hue='Diagnosis', data=dataset_for_plots)
 
@@ -136,6 +176,9 @@ if data_analyses_on:
     st.pyplot(plot.get_figure())
 
     plt.clf()
+
+    st.header('Mapa de divisão de dados por Risco Genético, Histórico de Câncer, Fumante e Gênero')
+    st.write('Nesse mapa é possível visualizar de forma mais clara a divisão dos dados e quais são os diagnósticos de cada grupo.')
 
     patients_data_for_tree_map = dataset_for_plots.drop(columns=['BMI', 'Age', 'AlcoholIntake', 'PhysicalActivity'])
 
