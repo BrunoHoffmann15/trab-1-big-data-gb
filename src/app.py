@@ -48,7 +48,10 @@ if data_analyses_on:
     st.subheader('Análise dos Dados')
     st.write('Para a construção dos gráficos foram utilizadas as libs matplotlib, seaborn e plotly em conjunto com o streamlit para renderização.')
     st.subheader('Gráficos')
+
+    # GENDER
     st.subheader('Porcentagens de distribuição de pacientes por gênero')
+    st.write('Com essa divisão de dados é possível verificar que, por mais que tenham mais registros de pacientes do gênero masculino, o dataset está dividido quase igualmente.')
     gender_distribution = np.unique(dataset_for_plots['Gender'], return_counts=True)
     st.write(f"Porcentagem Masculino: {gender_distribution[1][1] / len(dataset_for_plots) * 100}%")
     st.write(f"Porcentagem Feminino: {gender_distribution[1][0] / len(dataset_for_plots) * 100}%")
@@ -62,10 +65,12 @@ if data_analyses_on:
 
     # Limpa o plot para não interferir nos próximos
     plt.clf()
+
+    # GENDER + DIAGNOSIS
     st.subheader('Porcentagens de distribuição de pacientes por gênero e diagnóstico')
     count_cancer_female = np.sum((dataset_for_plots['Gender'] == 'Feminino') & (dataset_for_plots['Diagnosis']  == 1))
     count_cancer_male = np.sum((dataset_for_plots['Gender'] == 'Masculino') & (dataset_for_plots['Diagnosis'] == 1))
-
+    st.write('Entretando, é mais comum encontrar pacientes do gênero feminino diagnosticados com câncer, em relação aos pacientes do gênero masculino.')
     st.write(f"Total de pessoas do gênero feminino com câncer: {count_cancer_female} ({count_cancer_female/gender_distribution[1][1] * 100}%)")
     st.write(f"Total de pessoas do gênero masculino com câncer: {count_cancer_male} ({count_cancer_male/gender_distribution[1][0] * 100}%)")
     plot = sns.countplot(data=dataset_for_plots, x='Gender', hue='Diagnosis')
@@ -79,14 +84,16 @@ if data_analyses_on:
 
     plt.clf()
 
+    # SMOKING
     smoking_distribution = np.unique(dataset_for_plots['Smoking'], return_counts=True)
     st.subheader('Porcentagens de distribuição de pacientes por fumantes')
+    st.write('Já a divisão de pacientes por fumantes é mais desbalanceada do que a divisão por gênero.')
     st.write(f"Porcentagem de Fumantes: {smoking_distribution[1][1] / len(dataset_for_plots) * 100}%")
     st.write(f"Porcentagem de Não fumantes: {smoking_distribution[1][0] / len(dataset_for_plots) * 100}%")
 
     plot = sns.countplot(x=dataset_for_plots['Smoking'])
 
-    plt.title('Relação entre Fumantes e Câncer')
+    plt.title('Distribuição por Pacientes Fumantes')
     plt.xlabel('Fumante')
     plt.ylabel('Contagem')
 
@@ -94,9 +101,11 @@ if data_analyses_on:
 
     plt.clf()
 
+    # SMOKING + DIAGNOSIS
     patients_smoking_with_cancer = dataset_for_plots[(dataset_for_plots["Smoking"] == 'Sim') & (dataset_for_plots["Diagnosis"] == 1)];
     patients_not_smoking_with_cancer = dataset_for_plots[(dataset_for_plots["Smoking"] == 'Não') & (dataset_for_plots["Diagnosis"] == 1)];
     st.subheader('Porcentagens de distribuição de pacientes por fumantes e diagnóstico')
+    st.write('E a partir do gráfico abaixo, é possível verificar que essa feature tem certa relevância para a definição do diagnóstico.')
     st.write(f"Percentual de Fumantes com Câncer: {len(patients_smoking_with_cancer) / smoking_distribution[1][1] * 100}%")
     st.write(f"Percentual de Não Fumantes com Câncer: {len(patients_not_smoking_with_cancer) / smoking_distribution[1][0] * 100}%")
 
@@ -111,6 +120,7 @@ if data_analyses_on:
 
     plt.clf()
 
+    # GENETIC RISK
     genetic_risk_distribution = np.unique(dataset_for_plots['GeneticRisk'], return_counts=True)
 
     high_risk_perc = genetic_risk_distribution[1][0] / len(dataset_for_plots) * 100
@@ -122,6 +132,8 @@ if data_analyses_on:
 
     st.header('Porcentagens de distribuição de pacientes por risco genético')
 
+    st.write('Com esses dados, é possível verificar que a grande maioria dos pacientes desse grupo de dados possui um risco genético baixo de câncer, passando da metade dos registros totais, seguido pelos pecientes de risco genético médio, mas com uma porcentagem muito menor, e por fim, os pacientes de risco genético alto, com apenas 10% dos registros.')
+
     fig = plt.figure(figsize=(8, 6))
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
     plt.axis('equal')
@@ -132,11 +144,13 @@ if data_analyses_on:
 
     plt.clf()
 
+    # GENETIC RISK + DIAGNOSIS
     patients_low_risk_with_cancer = dataset_for_plots[(dataset_for_plots["GeneticRisk"] == 'Baixo') & (dataset_for_plots["Diagnosis"] == 1)];
     patients_medium_risk_with_cancer = dataset_for_plots[(dataset_for_plots["GeneticRisk"] == 'Médio') & (dataset_for_plots["Diagnosis"] == 1)];
     patients_high_risk_with_cancer = dataset_for_plots[(dataset_for_plots["GeneticRisk"] == 'Alto') & (dataset_for_plots["Diagnosis"] == 1)];
 
     st.header('Porcentagens de distribuição de pacientes por risco genético e diagnóstico')
+    st.write('Com os dados do gráfico anterior, em conjunto com a informação da distribuição de pacientes pelo diagnóstico, fica nítido que quanto mais alto o risco genético, maior a chance do usuário de fato ser diagnosticado com câncer.')
     st.write(f"Percentual de Baixo Risco com Câncer: {len(patients_high_risk_with_cancer) / genetic_risk_distribution[1][0] * 100}%")
     st.write(f"Percentual de Médio Risco com Câncer: {len(patients_low_risk_with_cancer) / genetic_risk_distribution[1][1] * 100}%")
     st.write(f"Percentual de Alto Risco com Câncer: {len(patients_medium_risk_with_cancer) / genetic_risk_distribution[1][2] * 100}%")
@@ -152,7 +166,10 @@ if data_analyses_on:
 
     plt.clf()
 
+    # ALCOHOL INTAKE + DIAGNOSIS
     st.header('Porcentagens de distribuição de pacientes por consumo de álcool e diagnóstico')
+
+    st.write('A partir de um gráfico de violino, que relaciona a distribuição dos valores de X com Y, ilustrando a densidade de ambos, é constatado que há uma maior quantidade de pessoas com câncer que consomem mais de 3 unidades de álcool por semana, em relação as pessoas que consomem menos álcool.')
 
     plot = sns.violinplot(x='Diagnosis', y='AlcoholIntake', data=dataset_for_plots)
 
@@ -164,8 +181,9 @@ if data_analyses_on:
 
     plt.clf()
 
+    # AGE + DIAGNOSIS
     st.header('Porcentagens de distribuição de pacientes por idade e diagnóstico')
-
+    st.write('A partir do gráfico de enxame abaixo, que distribui os pacientes por idade e sinaliza quais foram diagnosticados positivamente ou negativamente, é possível visualizar que a maior parte dos pacientes diagnosticados com câncer estão acima de 50 anos.')
     plot = sns.swarmplot(x='Age', hue='Diagnosis', data=dataset_for_plots)
 
     plt.title('Relação entre Idade e Câncer')
@@ -177,6 +195,7 @@ if data_analyses_on:
 
     plt.clf()
 
+    # TREEMAP (genetic risk, cancer history, smoking, gender)
     st.header('Mapa de divisão de dados por Risco Genético, Histórico de Câncer, Fumante e Gênero')
     st.write('Nesse mapa é possível visualizar de forma mais clara a divisão dos dados e quais são os diagnósticos de cada grupo.')
 
